@@ -6,7 +6,7 @@ def data_prep():
     df = pd.read_csv('organics.csv')
     
     # Justify why we dropp all these values
-    df.drop(['CUSTID', 'DOB', 'EDATE', 'NEIGHBORHOOD','LCDATE', 'BILL', 'AGEGRP1', 'AGEGRP2'], axis=1, inplace=True)
+    df.drop(['CUSTID', 'DOB', 'EDATE', 'NEIGHBORHOOD','LCDATE', 'BILL', 'AGEGRP1', 'AGEGRP2', 'ORGANICS'], axis=1, inplace=True)
     
     #Fill in mean values for nan in numeric values, explored that AGE, AFFL and LTIME has NaN. 
     numeric = ['AGE','AFFL' ,'LTIME']
@@ -26,5 +26,22 @@ def data_prep():
     
     #Fill in GENDER
     df['GENDER'].fillna('U', inplace = True)
+    
+    #hot-encoding, categorical to numbers
+    df2 = pd.get_dummies(df)
         
-    return df
+    return df2
+
+def analyse_feature_importance(dm_model, feature_names, n_to_display=20):
+    # grab feature importances from the model
+    importances = dm_model.feature_importances_
+
+    # sort them out in descending order
+    indices = np.argsort(importances)
+    indices = np.flip(indices, axis=0)
+
+    # limit to 20 features, you can leave this out to print out everything
+    indices = indices[:n_to_display]
+
+    for i in indices:
+       print(feature_names[i], ':', importances[i])
